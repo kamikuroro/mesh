@@ -298,9 +298,6 @@ func (that *zero) Init() {
 		}
 		that.writers = append(that.writers, &WriterCloser{writer: cw, closer: fw})
 	}
-	// zerolog.TimeFieldFormat = DateFormat23
-	// zerolog.TimestampFieldName = "timestamp"
-	// zerolog.MessageFieldName = "msg"
 	that.logger = zerolog.New(that).Level(zerolog.InfoLevel).With().Timestamp().Logger()
 	AddProcessShutdownHook(func() error { return that.Close() })
 }
