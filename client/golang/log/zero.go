@@ -11,10 +11,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/opendatav/mesh/client/golang/macro"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"net/url"
 	"os"
@@ -23,6 +19,11 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/opendatav/mesh/client/golang/macro"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func init() {
@@ -40,6 +41,7 @@ type zero struct {
 	once    sync.Once
 	writers []io.WriteCloser
 	name    string
+	logger  zerolog.Logger
 }
 
 func (that *zero) GetTraceId() string {
@@ -196,21 +198,21 @@ func (that *zero) Level(level Level) {
 func (that *zero) Event(level Level) *zerolog.Event {
 	switch level {
 	case FATAL:
-		return log.Fatal()
+		return that.logger.Fatal()
 	case ERROR:
-		return log.Error()
+		return that.logger.Error()
 	case WARN:
-		return log.Warn()
+		return that.logger.Warn()
 	case INFO:
-		return log.Info()
+		return that.logger.Info()
 	case DEBUG:
-		return log.Debug()
+		return that.logger.Debug()
 	case STACK:
-		return log.Debug()
+		return that.logger.Debug()
 	case ALL:
-		return log.Debug()
+		return that.logger.Debug()
 	default:
-		return log.Info()
+		return that.logger.Info()
 	}
 }
 
@@ -299,8 +301,7 @@ func (that *zero) Init() {
 	zerolog.TimeFieldFormat = DateFormat23
 	zerolog.TimestampFieldName = "timestamp"
 	zerolog.MessageFieldName = "msg"
-	log.Logger = zerolog.New(that).Level(zerolog.InfoLevel).With().Timestamp().Logger()
-	zerolog.DefaultContextLogger = &log.Logger
+	that.logger = zerolog.New(that).Level(zerolog.InfoLevel).With().Timestamp().Logger()
 	AddProcessShutdownHook(func() error { return that.Close() })
 }
 
