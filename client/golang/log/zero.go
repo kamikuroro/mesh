@@ -269,7 +269,8 @@ func (that *zero) Init() {
 	that.name = macro.Name()
 	if macro.JsonLogFormat.Enable() {
 		cw := zerolog.ConsoleWriter{
-			Out:             os.Stdout,
+			// Out:             os.Stdout,
+			Out:             &Writers{writers: []io.Writer{fw}},
 			TimeFormat:      DateFormat23,
 			FormatTimestamp: that.FormatTimestamp,
 		}
@@ -285,7 +286,8 @@ func (that *zero) Init() {
 		zerolog.LevelFatalValue = strings.ToUpper(zerolog.LevelFatalValue)
 		zerolog.LevelPanicValue = strings.ToUpper(zerolog.LevelPanicValue)
 		zerolog.LevelFieldMarshalFunc = that.FormatZLevel
-		that.writers = append(that.writers, &WriterCloser{writer: cw}, fw)
+		// that.writers = append(that.writers, &WriterCloser{writer: cw}, fw)
+		that.writers = append(that.writers, &WriterCloser{writer: cw, closer: fw})
 	} else {
 		cw := zerolog.ConsoleWriter{
 			Out:             &Writers{writers: []io.Writer{os.Stdout, fw}},
