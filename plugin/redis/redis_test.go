@@ -8,9 +8,10 @@
 package redis
 
 import (
-	"github.com/opendatav/mesh/client/golang/mpc"
 	"net/url"
 	"testing"
+
+	"github.com/opendatav/mesh/client/golang/mpc"
 )
 
 func TestParseServers(t *testing.T) {
@@ -27,7 +28,7 @@ func TestParseServers(t *testing.T) {
 
 func TestRedisClusterGet(t *testing.T) {
 	ctx := mpc.Context()
-	client, err := new(redisAccessLayer).NewClient(ctx, &redisOption{})
+	client, err := new(redisAccessLayer).NewClient(ctx, "")
 	if nil != err {
 		t.Error(err)
 		return
